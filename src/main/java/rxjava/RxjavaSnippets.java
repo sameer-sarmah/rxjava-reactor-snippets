@@ -1,3 +1,4 @@
+package rxjava;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -8,7 +9,9 @@ import java.util.stream.Collectors;
 
 import io.reactivex.Observable;
 import io.reactivex.observables.ConnectableObservable;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
+import util.Util;
 
 public class RxjavaSnippets {
 	public static void main(String... strings) throws InterruptedException {
@@ -24,11 +27,11 @@ public class RxjavaSnippets {
 		//generate(linesFromOne);
 		
 		//IProductDetails productDetails = new ProductDetailsRxJava();
-		//IProductDetails productDetails =new ProductDetailsRxJavaFromCallable();
-		IProductDetails productDetails = new ProductDetailsRxJavaFromFuture();
+		IProductDetails productDetails =new ProductDetailsRxJavaFromCallable();
+		//IProductDetails productDetails = new ProductDetailsRxJavaFromFuture();
 		//sequentialHttpCall();
 		parallelHttpCall(productDetails);
-		
+		Schedulers.io();
 		Thread.sleep(10000);
 	}
 	

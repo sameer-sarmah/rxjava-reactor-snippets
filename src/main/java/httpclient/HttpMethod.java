@@ -1,4 +1,4 @@
-package northwind.httpclient;
+package httpclient;
 
 public enum  HttpMethod {
     GET("GET"),

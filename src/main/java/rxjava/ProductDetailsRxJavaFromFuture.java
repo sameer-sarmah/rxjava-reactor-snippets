@@ -1,11 +1,12 @@
+package rxjava;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import httpclient.HttpClient;
+import httpclient.HttpMethod;
 import io.reactivex.Observable;
-import northwind.httpclient.HttpClient;
-import northwind.httpclient.HttpMethod;
 
 public class ProductDetailsRxJavaFromFuture implements IProductDetails {
 	private static final String serviceBaseURL = "https://services.odata.org/Northwind/Northwind.svc/Products";

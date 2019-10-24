@@ -1,4 +1,4 @@
-package northwind.exception;
+package exception;
 
 public class CoreException extends Exception {
     private String message;

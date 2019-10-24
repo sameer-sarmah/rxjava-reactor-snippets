@@ -1,37 +1,42 @@
+package rxjava;
 import java.util.Collections;
 
-import northwind.httpclient.HttpClient;
-import northwind.httpclient.HttpMethod;
-import reactor.core.publisher.Mono;
+import httpclient.HttpClient;
+import httpclient.HttpMethod;
+import io.reactivex.Observable;
 
-public class ProductDetailsReactor {
+public class ProductDetailsRxJava implements IProductDetails{
 	private static final String serviceBaseURL = "https://services.odata.org/Northwind/Northwind.svc/Products";
-	final static HttpClient httpClient = new HttpClient();
+	private final static HttpClient httpClient = new HttpClient();
 
-	public static Mono<String> getProducts() {
+	public Observable<String> getProducts() {
 		String productURL = serviceBaseURL + "?$format=json";
-		return Mono.create((emitter)->{
+		return Observable.create((emitter)->{
 			try {
 			String productsJSON = httpClient.request(productURL, HttpMethod.GET, Collections.<String, String>emptyMap(),
-						Collections.<String, String>emptyMap(), null);
-			emitter.success(productsJSON);
+						Collections.<String, String>emptyMap(), null);		
+			emitter.onNext(productsJSON);
+			emitter.onComplete();
 			}
 			catch(Exception e) {
-				emitter.error(e);
+				emitter.onError(e);
 			}
 		});
 	}
 
-	public static Mono<String> getProductCount() {
+
+
+	public Observable<String> getProductCount() {
 		String countURL = serviceBaseURL + "/$count";
-		return Mono.create((emitter)->{
+		return Observable.create((emitter)->{
 			try {
 			String count = httpClient.request(countURL, HttpMethod.GET, Collections.<String, String>emptyMap(),
 					Collections.<String, String>emptyMap(), null);
-			emitter.success(count);
+			emitter.onNext(count);
+			emitter.onComplete();
 			}
 			catch(Exception e) {
-				emitter.error(e);
+				emitter.onError(e);
 			}
 		});
 	}

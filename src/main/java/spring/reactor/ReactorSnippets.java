@@ -1,3 +1,4 @@
+package spring.reactor;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,22 +18,25 @@ import reactor.core.publisher.EmitterProcessor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
+import spring.reactor.IProductDetails;
+import util.Util;
 
 public class ReactorSnippets {
 
 	public static void main(String[] args) {
-		InputStream inputStreamOne = RxjavaSnippets.class.getClassLoader().getResourceAsStream("bundleOne.properties");
+		InputStream inputStreamOne = ReactorSnippets.class.getClassLoader().getResourceAsStream("bundleOne.properties");
 		BufferedReader readerOne = new BufferedReader(new InputStreamReader(inputStreamOne));
 		List<String> linesFromOne = readerOne.lines().collect(Collectors.toList());
 		
-		InputStream inputStreamTwo = RxjavaSnippets.class.getClassLoader().getResourceAsStream("bundleTwo.txt");
+		InputStream inputStreamTwo = ReactorSnippets.class.getClassLoader().getResourceAsStream("bundleTwo.txt");
 		BufferedReader readerTwo = new BufferedReader(new InputStreamReader(inputStreamTwo));
 		List<String> linesFromTwo = readerTwo.lines().collect(Collectors.toList());
 
-
-		
+		//IProductDetails productDetails = new ProductDetailsReactorFromCallable();
+		//IProductDetails productDetails = new ProductDetailsReactor();
+		IProductDetails productDetails = new ProductDetailsReactorFromFuture();
 		//sequentialHttpCall();
-		parallelHttpCall();
+		parallelHttpCall(productDetails);
 
 		try {
 			Thread.sleep(10000);
@@ -41,9 +45,9 @@ public class ReactorSnippets {
 		}
 	}
 	
-	private static void parallelHttpCall() {
-		Mono<String> productsObs =  ProductDetailsReactor.getProducts();
-		Mono<String> productCountObs =  ProductDetailsReactor.getProductCount();
+	private static void parallelHttpCall(IProductDetails productDetails) {
+		Mono<String> productsObs =  productDetails.getProducts();
+		Mono<String> productCountObs =  productDetails.getProductCount();
 		CountDownLatch latch=new CountDownLatch(2);
 		System.out.println("Non blocking");
 		productCountObs.subscribe((count)->{
@@ -64,9 +68,9 @@ public class ReactorSnippets {
 		System.out.println("all tasks are completed");
 	}
 	
-	private static void sequentialHttpCall() {
-		Mono<String> productsObs =  ProductDetailsReactor.getProducts();
-		Mono<String> productCountObs =  ProductDetailsReactor.getProductCount();
+	private static void sequentialHttpCall(IProductDetails productDetails) {
+		Mono<String> productsObs =  productDetails.getProducts();
+		Mono<String> productCountObs =  productDetails.getProductCount();
 		System.out.println("Non blocking");
 		productCountObs.subscribe((count)->{
 			System.out.println("Number of products are "+count);

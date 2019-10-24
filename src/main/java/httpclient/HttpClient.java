@@ -1,4 +1,4 @@
-package northwind.httpclient;
+package httpclient;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -11,7 +11,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
-import northwind.exception.CoreException;
+import exception.CoreException;
 
 import java.io.BufferedReader;
 import java.io.IOException;

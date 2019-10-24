@@ -1,9 +1,10 @@
+package rxjava;
 import java.util.Collections;
 
+import httpclient.HttpClient;
+import httpclient.HttpMethod;
 import io.reactivex.Observable;
 import io.reactivex.schedulers.Schedulers;
-import northwind.httpclient.HttpClient;
-import northwind.httpclient.HttpMethod;
 
 public class ProductDetailsRxJavaFromCallable implements IProductDetails {
 

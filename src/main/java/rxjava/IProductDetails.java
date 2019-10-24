@@ -1,3 +1,4 @@
+package rxjava;
 import io.reactivex.Observable;
 
 public interface IProductDetails {
