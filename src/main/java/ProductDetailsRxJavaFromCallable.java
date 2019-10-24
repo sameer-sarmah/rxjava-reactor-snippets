@@ -1,6 +1,7 @@
 import java.util.Collections;
 
 import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 import northwind.httpclient.HttpClient;
 import northwind.httpclient.HttpMethod;
 
@@ -21,7 +22,7 @@ public class ProductDetailsRxJavaFromCallable implements IProductDetails {
 				e.printStackTrace();
 			}
 			return productsJSON;
-		});
+		}).subscribeOn(Schedulers.io());
 	}
 
 
