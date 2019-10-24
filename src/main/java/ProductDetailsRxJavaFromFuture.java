@@ -14,6 +14,7 @@ public class ProductDetailsRxJavaFromFuture implements IProductDetails {
 
 	public Observable<String> getProducts() {
 		String productURL = serviceBaseURL + "?$format=json";
+		//CompletableFuture.supplyAsync(supplier) could also be used
 		CompletableFuture<String> completableFuture = new CompletableFuture<>();
 		executor.submit(()->{
 			try {
@@ -33,6 +34,7 @@ public class ProductDetailsRxJavaFromFuture implements IProductDetails {
 
 	public Observable<String> getProductCount() {
 		String countURL = serviceBaseURL + "/$count";
+		//CompletableFuture.supplyAsync(supplier) could also be used
 		CompletableFuture<String> completableFuture = new CompletableFuture<>();
 		executor.submit(()->{
 			try {
