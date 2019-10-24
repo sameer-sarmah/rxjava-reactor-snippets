@@ -23,16 +23,18 @@ public class RxjavaSnippets {
 
 		//generate(linesFromOne);
 		
-
+		//IProductDetails productDetails = new ProductDetailsRxJava();
+		//IProductDetails productDetails =new ProductDetailsRxJavaFromCallable();
+		IProductDetails productDetails = new ProductDetailsRxJavaFromFuture();
 		//sequentialHttpCall();
-		parallelHttpCall();
+		parallelHttpCall(productDetails);
 		
 		Thread.sleep(10000);
 	}
 	
-	private static void parallelHttpCall() {
-		Observable<String> productsObs =  ProductDetailsRxJava.getProducts();
-		Observable<String> productCountObs =  ProductDetailsRxJava.getProductCount();
+	private static void parallelHttpCall(IProductDetails productDetails) {
+		Observable<String> productsObs =  productDetails.getProducts();
+		Observable<String> productCountObs =  productDetails.getProductCount();
 		CountDownLatch latch=new CountDownLatch(2);
 		System.out.println("Non blocking");
 		productCountObs.subscribe((count)->{
@@ -53,9 +55,9 @@ public class RxjavaSnippets {
 		System.out.println("all tasks are completed");
 	}
 	
-	private static void sequentialHttpCall() {
-		Observable<String> productsObs =  ProductDetailsRxJava.getProducts();
-		Observable<String> productCountObs =  ProductDetailsRxJava.getProductCount();
+	private static void sequentialHttpCall(IProductDetails productDetails) {
+		Observable<String> productsObs =  productDetails.getProducts();
+		Observable<String> productCountObs =  productDetails.getProductCount();
 		System.out.println("Non blocking");
 		productCountObs.subscribe((count)->{
 			System.out.println("Number of products are "+count);

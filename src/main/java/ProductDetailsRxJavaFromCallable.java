@@ -4,22 +4,23 @@ import io.reactivex.Observable;
 import northwind.httpclient.HttpClient;
 import northwind.httpclient.HttpMethod;
 
-public class ProductDetailsRxJava implements IProductDetails{
+public class ProductDetailsRxJavaFromCallable implements IProductDetails {
+
 	private static final String serviceBaseURL = "https://services.odata.org/Northwind/Northwind.svc/Products";
 	private final static HttpClient httpClient = new HttpClient();
 
 	public Observable<String> getProducts() {
 		String productURL = serviceBaseURL + "?$format=json";
-		return Observable.create((emitter)->{
+		return Observable.fromCallable(()->{
+			String productsJSON ="[]";
 			try {
-			String productsJSON = httpClient.request(productURL, HttpMethod.GET, Collections.<String, String>emptyMap(),
-						Collections.<String, String>emptyMap(), null);		
-			emitter.onNext(productsJSON);
-			emitter.onComplete();
+			productsJSON = httpClient.request(productURL, HttpMethod.GET, Collections.<String, String>emptyMap(),
+						Collections.<String, String>emptyMap(), null);
 			}
 			catch(Exception e) {
-				emitter.onError(e);
+				e.printStackTrace();
 			}
+			return productsJSON;
 		});
 	}
 
@@ -27,16 +28,16 @@ public class ProductDetailsRxJava implements IProductDetails{
 
 	public Observable<String> getProductCount() {
 		String countURL = serviceBaseURL + "/$count";
-		return Observable.create((emitter)->{
+		return Observable.fromCallable(()->{
+			String count = "0";
 			try {
-			String count = httpClient.request(countURL, HttpMethod.GET, Collections.<String, String>emptyMap(),
+			 count = httpClient.request(countURL, HttpMethod.GET, Collections.<String, String>emptyMap(),
 					Collections.<String, String>emptyMap(), null);
-			emitter.onNext(count);
-			emitter.onComplete();
 			}
 			catch(Exception e) {
-				emitter.onError(e);
+				e.printStackTrace();
 			}
+			return count;
 		});
 	}
 }
