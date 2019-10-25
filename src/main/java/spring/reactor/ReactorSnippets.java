@@ -37,12 +37,17 @@ public class ReactorSnippets {
 		IProductDetails productDetails = new ProductDetailsReactorFromFuture();
 		//sequentialHttpCall();
 		//parallelHttpCall(productDetails);
-		requestRequiredItems(linesFromOne);
+		//requestRequiredItems(linesFromOne);
+		requestRequiredItemsOnNext(linesFromOne);
 		try {
 			Thread.sleep(10000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+	private static void requestRequiredItemsOnNext(List<String> lines) {
+		Flux<String> stream = getObservableOne(lines);
+		stream.subscribe(new RequestOnNext());
 	}
 	
 	private static void requestRequiredItems(List<String> lines) {
