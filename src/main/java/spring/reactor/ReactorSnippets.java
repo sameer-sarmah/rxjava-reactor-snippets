@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import org.reactivestreams.Subscription;
 
+import io.reactivex.Observable;
 import reactor.core.publisher.ConnectableFlux;
 import reactor.core.publisher.EmitterProcessor;
 import reactor.core.publisher.Flux;
@@ -38,21 +39,54 @@ public class ReactorSnippets {
 		//sequentialHttpCall();
 		//parallelHttpCall(productDetails);
 		//requestRequiredItems(linesFromOne);
-		requestRequiredItemsOnNext(linesFromOne);
+		//requestRequiredItemsOnNext(linesFromOne);
+		//buffer(linesFromOne);
+		groupBy();
+		//window(linesFromOne);
 		try {
 			Thread.sleep(10000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
+	
+	private static void groupBy() {
+		  Flux.range(0, 100)
+								.groupBy((number)-> number % 2 == 0 ? "Even": "Odd")
+								.subscribe((entry)->{
+									String key = entry.key();
+									entry.collectList().subscribe((list)->{
+										int sum = list.stream().reduce(0, (accumulator,curent) -> accumulator+curent);
+										System.out.println("The sum of "+key+" numbers is "+sum);
+									});
+								});
+
+	}
+	
+	private static void buffer(List<String> lines) {
+		Flux<List<String>> stream = getStreamOne(lines)
+									.buffer(5);
+		stream.subscribe((list)->{
+			System.out.println(list);
+		});
+	}
+	
+	private static void window(List<String> lines) {
+		Flux<Flux<String>> stream = getStreamOne(lines)
+									.window(5);
+		stream.subscribe((fluxList)->{
+			fluxList.collectList().subscribe(System.out::println);
+		});
+	}
+	
 	private static void requestRequiredItemsOnNext(List<String> lines) {
-		Flux<String> stream = getObservableOne(lines);
+		Flux<String> stream = getStreamOne(lines);
 		stream.subscribe(new RequestOnNext());
 	}
 	
 	private static void requestRequiredItems(List<String> lines) {
 		List<Subscription> subscriptionContainer = new ArrayList<>();
-		Flux<String> stream = getObservableOne(lines);
+		Flux<String> stream = getStreamOne(lines);
 		Consumer<String> onNext = (String line) ->{
 			System.out.println("The item is "+line); 
 		};
@@ -160,27 +194,27 @@ public class ReactorSnippets {
 	
 	
 	private static void concatWith(List<String> linesFromOne,List<String> linesFromTwo) {
-		Flux<String> streamOne = getObservableOne(linesFromOne);
-		Flux<String> streamTwo = getObservableTwo(linesFromTwo);
+		Flux<String> streamOne = getStreamOne(linesFromOne);
+		Flux<String> streamTwo = getStreamTwo(linesFromTwo);
 		Flux<String>  streamConcatenated = streamOne.concatWith(streamTwo);
 		streamConcatenated.subscribe((line)->{System.out.println("The key is "+line);});
 	}
 	
 	private static void mergeWith(List<String> linesFromOne,List<String> linesFromTwo) {
-		Flux<String> streamOne = getObservableOne(linesFromOne);
-		Flux<String> streamTwo = getObservableTwo(linesFromTwo);
+		Flux<String> streamOne = getStreamOne(linesFromOne);
+		Flux<String> streamTwo = getStreamTwo(linesFromTwo);
 		Flux<String> streamMerged = streamOne.mergeWith(streamTwo);
 		streamMerged.subscribe((line)-> {System.out.println(line);});
 	}
 	
 	private static void zipWith(List<String> linesFromOne,List<String> linesFromTwo){	
-		Flux<String> streamOne = getObservableOne(linesFromOne);
-		Flux<String> streamTwo = getObservableTwo(linesFromTwo);
+		Flux<String> streamOne = getStreamOne(linesFromOne);
+		Flux<String> streamTwo = getStreamTwo(linesFromTwo);
 		Flux<Tuple2<String,String>> streamZipped =streamOne.zipWith(streamTwo);
 		streamZipped.subscribe((tuple)-> {System.out.println("key is "+tuple.getT1()+" ,text is "+tuple.getT2());});
 	}
 	
-	private static Flux<String> getObservableOne(List<String> linesFromOne){
+	private static Flux<String> getStreamOne(List<String> linesFromOne){
 		Duration duration = Duration.ofMillis(300);
 		return Flux.fromIterable(()->linesFromOne.iterator())	
 				.delayElements(duration)
@@ -188,7 +222,7 @@ public class ReactorSnippets {
 				.filter((line) -> line.length() > 0);
 	} 
 	
-	private static Flux<String> getObservableTwo(List<String> linesFromTwo){
+	private static Flux<String> getStreamTwo(List<String> linesFromTwo){
 		return Flux.fromIterable(()->linesFromTwo.iterator())	
 				.filter((line) -> line.length() > 0);
 	} 

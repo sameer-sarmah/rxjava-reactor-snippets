@@ -11,6 +11,7 @@ import io.reactivex.Observable;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
+import reactor.core.publisher.Flux;
 import util.Util;
 
 public class RxjavaSnippets {
@@ -30,9 +31,42 @@ public class RxjavaSnippets {
 		IProductDetails productDetails =new ProductDetailsRxJavaFromCallable();
 		//IProductDetails productDetails = new ProductDetailsRxJavaFromFuture();
 		//sequentialHttpCall();
-		parallelHttpCall(productDetails);
-		Schedulers.io();
+		//parallelHttpCall(productDetails);
+		//buffer(linesFromOne);
+		
+		//window(linesFromOne);
+		groupBy();
 		Thread.sleep(10000);
+	}
+	
+	private static void groupBy() {
+		  Observable.range(0, 100)
+								.groupBy((number)-> number % 2 == 0 ? "Even": "Odd")
+								.subscribe((entry)->{
+									String key = entry.getKey();
+									entry.toList().subscribe((list)->{
+										int sum = list.stream().reduce(0, (accumulator,curent) -> accumulator+curent);
+										System.out.println("The sum of "+key+" numbers is "+sum);
+									});
+									
+								});
+
+	}
+	
+	private static void buffer(List<String> lines) {
+		Observable<List<String>> stream = getObservableOne(lines)
+									.buffer(5);
+		stream.subscribe((list)->{
+			System.out.println(list);
+		});
+	}
+	
+	private static void window(List<String> lines) {
+		Observable<Observable<String>> stream = getObservableOne(lines)
+									.window(5);
+		stream.subscribe((observable)->{
+			observable.toList().subscribe(System.out::println);
+		});
 	}
 	
 	private static void parallelHttpCall(IProductDetails productDetails) {
