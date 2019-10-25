@@ -3,6 +3,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -35,8 +36,18 @@ public class RxjavaSnippets {
 		//buffer(linesFromOne);
 		
 		//window(linesFromOne);
-		groupBy();
+		//groupBy();
+		Observable<String> deferredFlux = deferred();
+		deferredFlux.subscribe((id)->{ System.out.println(id); });
+		deferredFlux.subscribe((id)->{ System.out.println(id); });
+		deferredFlux.subscribe((id)->{ System.out.println(id); });
 		Thread.sleep(10000);
+	}
+	
+	private static Observable<String> deferred() {
+		return Observable.defer(() -> {
+		    return Observable.just(UUID.randomUUID().toString());
+		});
 	}
 	
 	private static void groupBy() {

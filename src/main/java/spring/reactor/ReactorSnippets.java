@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -41,13 +42,25 @@ public class ReactorSnippets {
 		//requestRequiredItems(linesFromOne);
 		//requestRequiredItemsOnNext(linesFromOne);
 		//buffer(linesFromOne);
-		groupBy();
+		//groupBy();
 		//window(linesFromOne);
+		
+		Flux<String> deferredFlux = deferred();
+		deferredFlux.subscribe((id)->{ System.out.println(id); });
+		deferredFlux.subscribe((id)->{ System.out.println(id); });
+		deferredFlux.subscribe((id)->{ System.out.println(id); });
+		
 		try {
 			Thread.sleep(10000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private static Flux<String> deferred() {
+		return Flux.defer(() -> {
+		    return Flux.just(UUID.randomUUID().toString());
+		});
 	}
 	
 	private static void groupBy() {
