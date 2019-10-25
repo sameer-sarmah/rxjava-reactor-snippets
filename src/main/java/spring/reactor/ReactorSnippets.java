@@ -1,24 +1,24 @@
 package spring.reactor;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import io.reactivex.Observable;
-import io.reactivex.observables.ConnectableObservable;
-import io.reactivex.processors.FlowableProcessor;
-import io.reactivex.subjects.PublishSubject;
+import org.reactivestreams.Subscription;
+
 import reactor.core.publisher.ConnectableFlux;
 import reactor.core.publisher.EmitterProcessor;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
-import spring.reactor.IProductDetails;
 import util.Util;
 
 public class ReactorSnippets {
@@ -36,13 +36,35 @@ public class ReactorSnippets {
 		//IProductDetails productDetails = new ProductDetailsReactor();
 		IProductDetails productDetails = new ProductDetailsReactorFromFuture();
 		//sequentialHttpCall();
-		parallelHttpCall(productDetails);
-
+		//parallelHttpCall(productDetails);
+		requestRequiredItems(linesFromOne);
 		try {
 			Thread.sleep(10000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private static void requestRequiredItems(List<String> lines) {
+		List<Subscription> subscriptionContainer = new ArrayList<>();
+		Flux<String> stream = getObservableOne(lines);
+		Consumer<String> onNext = (String line) ->{
+			System.out.println("The item is "+line); 
+		};
+		Consumer<Throwable> onError = (Throwable error) ->{
+			error.printStackTrace();
+		};
+		Consumer<Subscription> onSubscribe = (Subscription subscription) ->{
+			subscription.request(5);
+			subscriptionContainer.add(subscription);
+		};
+		ScheduledExecutorService scheduledExecutorService =
+		        Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
+		scheduledExecutorService.scheduleAtFixedRate(()->{ 
+			System.out.println("In scheduled executor callable");
+			subscriptionContainer.get(0).request(5);
+		}, 3, 3, TimeUnit.SECONDS);
+		stream.subscribe(onNext,onError,()->{},onSubscribe);
 	}
 	
 	private static void parallelHttpCall(IProductDetails productDetails) {
